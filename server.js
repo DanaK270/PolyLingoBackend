@@ -1,6 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
-// const cors = require('cors')
+const cors = require('cors')
 require('dotenv').config()
 // const path = require('path')
 
@@ -22,7 +22,7 @@ app.use(express.json())
 const AuthRouter = require('./routes/AuthRouter')
 
 // CORS Configuration
-// app.use(cors())
+app.use(cors())
 
 // Mount Routes (after CORS)
 app.use('/auth', AuthRouter)
