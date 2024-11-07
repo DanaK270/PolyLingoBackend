@@ -3,6 +3,8 @@ const mongoose = require('mongoose')
 // const cors = require('cors')
 require('dotenv').config()
 // const path = require('path')
+const { Reply } = require('./models/Reply');  // Adjust the path if necessary
+
 
 // PORT Configuration
 const PORT = process.env.PORT || 4000
@@ -14,6 +16,7 @@ const app = express()
 
 // configure database
 const db = require('./config/db')
+const { Issue } = require('./models/Issue');
 
 // Middleware to parse JSON
 app.use(express.json())
