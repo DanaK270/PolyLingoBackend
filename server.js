@@ -20,12 +20,14 @@ app.use(express.json())
 
 // Import Routes
 const AuthRouter = require('./routes/AuthRouter')
+const exerciseRoutes = require('./routes/exercise')
 
 // CORS Configuration
 app.use(cors())
 
 // Mount Routes (after CORS)
 app.use('/auth', AuthRouter)
+app.use('/exercise', exerciseRoutes)
 
 // Start server
 app.listen(PORT, () => {
