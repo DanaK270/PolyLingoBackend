@@ -1,6 +1,8 @@
 const express = require('express')
 const mongoose = require('mongoose')
+
 const logger = require('morgan');
+
 const cors = require('cors')
 require('dotenv').config()
 // const path = require('path')
@@ -31,6 +33,8 @@ const issueRouter = require('./routes/issue')
 // Import Routes
 const AuthRouter = require('./routes/AuthRouter')
 
+
+app.use(cors())
 
 
 // Mount Routes (after CORS)
