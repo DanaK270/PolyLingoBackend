@@ -1,8 +1,12 @@
 const express = require('express')
 const mongoose = require('mongoose')
+
+const logger = require('morgan')
+
 const cors = require('cors')
 require('dotenv').config()
 // const path = require('path')
+const { Reply } = require('./models/Reply') // Adjust the path if necessary
 
 // PORT Configuration
 const PORT = process.env.PORT || 4000
@@ -14,20 +18,26 @@ const app = express()
 
 // configure database
 const db = require('./config/db')
+const { Issue } = require('./models/Issue')
 
 // Middleware to parse JSON
+// CORS Configuration
+app.use(cors())
 app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+app.use(logger('dev'))
 
 // Import Routes
 const AuthRouter = require('./routes/AuthRouter')
 const exerciseRoutes = require('./routes/exercise')
+const issueRouter = require('./routes/issue')
 
-// CORS Configuration
 app.use(cors())
 
 // Mount Routes (after CORS)
 app.use('/auth', AuthRouter)
 app.use('/exercise', exerciseRoutes)
+app.use('/issues', issueRouter)
 
 // Start server
 app.listen(PORT, () => {
