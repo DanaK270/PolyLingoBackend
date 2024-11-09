@@ -1,16 +1,24 @@
 const { Issue, Reply } = require('../models')
 
+// Helper function to dynamically populate nested replies
+
 
 const GetIssues = async (req, res) => {
+  const populateReplies = (depth = 10) => {
+    let populateQuery = { path: 'replies' };
+    let current = populateQuery;
+  
+    for (let i = 0; i < depth; i++) {
+      current.populate = { path: 'replies' };
+      current = current.populate;
+    }
+  
+    return populateQuery;
+  };
+  
   try {
     const issues = await Issue.find()
-      .populate({
-        path: 'replies',
-        populate: {
-          path: 'replies',
-          populate: { path: 'replies' }, // Adjust as needed for deeper levels
-        },
-      })
+      .populate(populateReplies(10))  // You can adjust depth as needed
       .exec();
     res.json(issues);
   } catch (err) {
