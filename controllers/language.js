@@ -132,15 +132,25 @@ const languageController = {
   deletelanguage: async (req, res) => {
     const id = req.params.id;
     try {
-      const deletedLanguage = await Language.findByIdAndDelete(id);
-      if (!deletedLanguage) {
+      // Find the language and get its associated lessons
+      const language = await Language.findById(id).populate("fields");
+  
+      if (!language) {
         return res.status(404).send({ message: "Language not found" });
       }
-      res.send({ message: "Language deleted successfully" });
+  
+      // Delete all lessons associated with this language
+      await Lesson.deleteMany({ _id: { $in: language.fields.map(lesson => lesson._id) } });
+  
+      // Now delete the language
+      await Language.findByIdAndDelete(id);
+  
+      res.send({ message: "Language and associated lessons deleted successfully" });
     } catch (err) {
       res.status(500).send({ message: "Error deleting language", error: err.message });
     }
   },
+  
 };
 
 module.exports = languageController;

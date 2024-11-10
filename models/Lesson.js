@@ -9,6 +9,7 @@ const lessonSchema = new mongoose.Schema({
       public_id: { type: String }, // Optionally store the public_id from Cloudinary
     },
   ],
+  
 });
 
 const Lesson = mongoose.model("Lesson", lessonSchema);
