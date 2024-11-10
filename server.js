@@ -1,9 +1,14 @@
 const express = require('express')
 const mongoose = require('mongoose')
 
+
 const logger = require('morgan');
 
 const cors = require('cors')
+
+const expressLayouts = require('express-ejs-layouts')
+// const cors = require('cors')
+
 require('dotenv').config()
 // const path = require('path')
 const { Reply } = require('./models/Reply');  // Adjust the path if necessary
@@ -16,6 +21,11 @@ const PORT = process.env.PORT || 4000
 const app = express()
 
 // app.use('/images', express.static(path.join(__dirname, '/public/images')))
+app.use(express.urlencoded({ extended: true }));
+const db = require('./config/db')
+app.get('/', function (req, res) {})
+app.set('view engine', 'ejs')
+
 
 // configure database
 const db = require('./config/db')
@@ -30,12 +40,25 @@ app.use(logger('dev'));
 const issueRouter = require('./routes/issue')
 
 
+
+// const db = require('./config/db')
+const languageRouter=require("./routes/language")
+
 // Import Routes
 const AuthRouter = require('./routes/AuthRouter')
 
 
+
 app.use(cors())
 
+
+
+// CORS Configuration
+// app.use(cors())
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
+app.use(expressLayouts)
+app.use("/language",languageRouter)
 
 // Mount Routes (after CORS)
 app.use('/auth', AuthRouter)
