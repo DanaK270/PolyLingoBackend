@@ -28,7 +28,7 @@ app.set('view engine', 'ejs')
 
 
 // configure database
-const db = require('./config/db')
+
 const { Issue } = require('./models/Issue');
 
 // Middleware to parse JSON

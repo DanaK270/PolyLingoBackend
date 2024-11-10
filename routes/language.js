@@ -12,5 +12,6 @@ router.get("/languages", languageController.getlanguage);
 router.get("/languages/:id", languageController.getlanguageById);
 router.put("/languages/:id", languageController.updatelanguage);
 router.delete("/languages/:id", languageController.deletelanguage);
+router.delete("/lesson/:lessonId", languageController.deletelesson);
 
 module.exports = router;
