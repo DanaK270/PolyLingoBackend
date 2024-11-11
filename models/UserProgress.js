@@ -6,12 +6,12 @@ const userProgressSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  // languages_id: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'Language',
-  //   required: true
-  // },
-  // completedLessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }],
+  language_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Language',
+    required: true
+  },
+  completedLessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }],
   totalPoints: { type: Number, default: 0 },
   streak: { type: Number, default: 0 }
 })

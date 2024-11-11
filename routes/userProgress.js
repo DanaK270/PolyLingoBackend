@@ -15,5 +15,8 @@ router.post(
   middleware.verifyToken,
   userProgressController.createUserProgress
 )
+router.delete('/:id', userProgressController.deleteUserProgress)
+router.put('/:id', userProgressController.updateUserProgress)
+router.patch('/stats/:id/', userProgressController.updateUserProgressStats)
 
 module.exports = router
