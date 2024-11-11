@@ -1,4 +1,4 @@
-const UserNotes = require('../models/userNotes')
+const UserNotes = require('../models/UserNote')
 
 // Create a new user note
 const createUserNote = async (req, res) => {

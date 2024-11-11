@@ -55,7 +55,7 @@ app.use('/language', languageRouter)
 // Mount Routes (after CORS)
 app.use('/auth', AuthRouter)
 app.use('/issues', issueRouter)
-app.use('/userNotes', userNotes)
+app.use('/userNote', userNote)
 // Start server
 app.listen(PORT, () => {
   console.log(`App is running on PORT ${PORT}`)
