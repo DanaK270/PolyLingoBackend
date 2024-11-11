@@ -16,39 +16,49 @@ const languageController = {
       languagename,
       difficulties,
       description,
-      fields, 
+      fields,
     } = req.body;
-    
+  
     try {
       const lessonIds = [];
-     
+  
       for (const lesson of fields) {
-        const videoUploadResult = await cloudinary.uploader.upload(lesson.video, {
-          resource_type: "video",
-        });
-        
+        // Array to store multiple video URLs for each lesson
+        const videoUrls = [];
+  
+        // Check if `lesson.video` is an array of video paths
+        if (Array.isArray(lesson.video)) {
+          for (const videoPath of lesson.video) {
+            const videoUploadResult = await cloudinary.uploader.upload(videoPath, {
+              resource_type: "video",
+            });
+  
+            // Push each uploaded video's data to the array
+            videoUrls.push({
+              url: videoUploadResult.secure_url,
+              public_id: videoUploadResult.public_id,
+            });
+          }
+        }
+  
+        // Create a new lesson document with multiple videos
         const newLesson = new Lesson({
           name: lesson.name,
           description: lesson.description,
-          video: [
-            {
-              url: videoUploadResult.secure_url,
-              public_id: videoUploadResult.public_id, 
-            },
-          ],
+          video: videoUrls, // Store array of uploaded video URLs
         });
-
+  
         const savedLesson = await newLesson.save();
-        lessonIds.push(savedLesson._id); 
+        lessonIds.push(savedLesson._id);
       }
-
+  
       const language = new Language({
         languagename,
         difficulties,
         description,
         fields: lessonIds, // Reference the created lessons
       });
-      
+  
       await language.save();
       res.status(201).send({ message: "Language created successfully", language });
     } catch (err) {
