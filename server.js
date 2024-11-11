@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const Discussion = require('./models/Discussion')
 
 const logger = require('morgan')
 
@@ -23,6 +24,17 @@ app.use(express.urlencoded({ extended: true }))
 const db = require('./config/db')
 app.get('/', function (req, res) {})
 app.set('view engine', 'ejs')
+
+
+app.get('/discussions', async (req, res) => {
+  try {
+    const discussions = await Discussion.find().populate('issues'); // populate issues if needed
+    res.json(discussions);
+  } catch (err) {
+    console.error('Error fetching discussions:', err);
+    res.status(500).json({ error: 'Failed to fetch discussions' });
+  }
+});
 
 // configure database
 const { Issue } = require('./models/Issue')
