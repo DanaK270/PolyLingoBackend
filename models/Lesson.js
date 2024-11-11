@@ -5,8 +5,8 @@ const lessonSchema = new mongoose.Schema({
   description: { type: String, required: true },
   video: [
     {
-      url: { type: String, required: true }, 
-      public_id: { type: String },
+      url: { type: String, required: true }, // Store video URL
+      public_id: { type: String }, // Optionally store the public_id from Cloudinary
     },
   ],
   discussion: { 
