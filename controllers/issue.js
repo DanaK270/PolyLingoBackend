@@ -101,20 +101,30 @@ const GetDiscussionIssues = async (req, res) => {
   const { discussionId } = req.params;  // Get discussionId from URL params
 
   try {
-    // Fetch the issues for the specific discussion, along with their replies (up to a certain depth)
+    // Fetch the discussion based on the discussionId
+    const discussion = await Discussion.findById(discussionId);
+    console.log('Fetched discussion:', discussion);
+
+    if (!discussion) {
+      return res.status(404).json({ message: 'Discussion not found' });
+    }
+
+    // Fetch issues related to the discussionId
     const issues = await Issue.find({ discussionId })
       .populate({
         path: 'replies',
         populate: {
           path: 'replies',
           populate: {
-            path: 'replies',  // You can keep nesting this for deeper replies
+            path: 'replies',  // Further nesting if needed
           },
         },
       })
       .exec();
 
-    if (!issues.length) {
+    console.log('Fetched issues:', issues);
+
+    if (!issues || issues.length === 0) {
       return res.status(404).json({ message: 'No issues found for this discussion' });
     }
 
@@ -126,49 +136,79 @@ const GetDiscussionIssues = async (req, res) => {
   }
 };
 
+const GetDiscussionsByLesson = async (req, res) => {
+  const { lessonId } = req.params;
+  try {
+    const discussions = await Discussion.find({ lessonId }); // Ensure this is filtering discussions by lessonId
+    res.json(discussions);
+  } catch (error) {
+    console.error('Error fetching discussions:', error);
+    res.status(500).json({ error: 'Failed to fetch discussions' });
+  }
+};
+
+
+
+
 const ReplyToReply = async (req, res) => {
   try {
-    const { id } = req.params;  // Get the issue ID from URL params
-    const { comment, parentReplyId } = req.body;  // Get the comment and parentReplyId
+    const { issueId, parentReplyId } = req.params;  // Get the issue ID and parentReply ID from URL params
+    const { comment } = req.body;  // Get the comment for the reply
 
     // Find the issue by ID
-    const issue = await Issue.findById(id);
+    const issue = await Issue.findById(issueId);
     if (!issue) return res.status(404).send({ message: 'Issue not found' });
-
-    // Ensure that the replies array is initialized (it should be due to schema)
-    if (!issue.replies) {
-      issue.replies = [];  // Initialize the replies array if it's not present
-    }
 
     // Create a new reply object
     const newReply = new Reply({
       comment,
-      issue: id,
+      issue: issueId,
       parentReply: parentReplyId || null,  // If there's a parent reply, include that reference
     });
 
-    // If the reply is a direct reply to the issue, push it directly to the issue's replies
+    // Ensure the replies array exists on the issue
+    if (!issue.replies) {
+      issue.replies = [];  // Initialize the replies array if not already present
+    }
+
+    // If there is no parentReplyId, it's a direct reply to the issue
     if (!parentReplyId) {
       issue.replies.push(newReply);
     } else {
-      // If it's a nested reply, find the parent reply and add this one to the parent's replies
-      const parentReply = issue.replies.find(reply => reply._id.toString() === parentReplyId);
+      // If there is a parent reply, find it by ID and add the new reply as a nested reply
+      const parentReply = await Reply.findById(parentReplyId);  // Use findById to get a Mongoose document
       if (parentReply) {
+        // Initialize the replies array of the parent reply if it doesn't exist
         if (!parentReply.replies) {
-          parentReply.replies = [];  // Initialize parent reply's replies array if needed
+          parentReply.replies = [];
         }
+
+        // Push the new reply to the parent reply's replies array
         parentReply.replies.push(newReply);
+
+        // Save the parent reply
+        await parentReply.save();  // Save the updated parent reply
       } else {
         return res.status(404).json({ error: 'Parent reply not found' });
       }
     }
 
-    // Save the issue with the new reply added
+    // Save the new reply
     await newReply.save();
+
+    // Save the issue with the updated replies (this should now include nested replies)
     await issue.save();
 
-    // Return the updated issue with populated replies
-    const populatedIssue = await Issue.findById(issue._id).populate('replies');
+    // Populate the replies and send back the updated issue with replies
+    const populatedIssue = await Issue.findById(issue._id)
+      .populate({
+        path: 'replies',
+        populate: {
+          path: 'replies', // Nested replies inside parent replies
+          model: 'Reply',
+        },
+      });
+
     res.status(201).json(populatedIssue);  // Send the updated issue with populated replies
   } catch (error) {
     console.log(error);
@@ -176,10 +216,14 @@ const ReplyToReply = async (req, res) => {
   }
 };
 
+
+
+
 module.exports = {
   GetIssues,
   CreateIssue,
   ReplyToReply,
   ReplyToIssue,
-  GetDiscussionIssues
+  GetDiscussionIssues,
+  GetDiscussionsByLesson
 };

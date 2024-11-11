@@ -3,15 +3,21 @@ const { Schema } = mongoose;
 
 
 
-const discussionSchema = new Schema(
-  {
-    name: { type: String, default: 'Discussion Forum' },
-    lessonId: { type: Schema.Types.ObjectId, ref: 'Lesson', required: true },
-    issues: [{ type: Schema.Types.ObjectId, ref: 'Issue' }],
+const discussionSchema = new Schema({
+  name: { type: String, default: 'Discussion Forum' },
+  lessonId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Lesson',  // Ensure this points to the correct model
+    required: true,
   },
-  { timestamps: true }
-);
+  issues: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Issue',  // Or whatever model is related to issues
+  }],
+});
+
 // Create the models
 const Discussion = mongoose.model('Discussion', discussionSchema);
 // Export the models
 module.exports =  Discussion ;
+

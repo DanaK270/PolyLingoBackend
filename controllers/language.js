@@ -84,18 +84,61 @@ const languageController = {
     }
   },
 
+  // getlanguageById: async (req, res) => {
+  //   const id = req.params.id;
+  //   try {
+  //     // const language = await Language.findById(id).populate('fields'); 
+  //     const language = await Language.findById(id).populate({
+  //       path: 'fields',
+  //       populate: { path: 'discussion' }
+  //     });
+  //     // Populate fields with lesson data
+  //     if (!language) {
+  //       return res.status(404).send({ message: "Language not found" });
+  //     }
+  //     res.json(language);
+  //   } catch (err) {
+  //     res.status(500).send({ message: "Error retrieving language", error: err.message });
+  //   }
+  // },
+
   getlanguageById: async (req, res) => {
     const id = req.params.id;
     try {
-      const language = await Language.findById(id).populate('fields'); // Populate fields with lesson data
+      const language = await Language.findById(id)
+        .populate({
+          path: 'fields', // Populate the fields array with Lesson documents
+          populate: {
+            path: 'discussion', // Populate the discussion field in each Lesson
+            model: 'Discussion', // Make sure to reference the correct model
+          },
+        });
+  
       if (!language) {
         return res.status(404).send({ message: "Language not found" });
       }
+  
       res.json(language);
     } catch (err) {
       res.status(500).send({ message: "Error retrieving language", error: err.message });
     }
   },
+  
+  getLessonById: async (req, res) => {
+    const lessonId = req.params.lessonId; // Get the lesson ID from the request params
+    try {
+      // Find the lesson by ID and populate the associated discussion field
+      const lesson = await Lesson.findById(lessonId).populate('discussion'); // Assuming 'discussion' is a reference in the Lesson schema
+      
+      if (!lesson) {
+        return res.status(404).send({ message: "Lesson not found" });
+      }
+  
+      res.json(lesson); // Return the lesson details
+    } catch (err) {
+      res.status(500).send({ message: "Error retrieving lesson", error: err.message });
+    }
+  },  
 
   updatelanguage: async (req, res) => {
     const id = req.params.id;
@@ -153,7 +196,13 @@ const languageController = {
     const id = req.params.id;
     try {
       // Find the language and get its associated lessons
-      const language = await Language.findById(id).populate("fields");
+      // const language = await Language.findById(id).populate("fields");
+
+      const language = await Language.findById(id).populate({
+        path: 'fields',
+        populate: { path: 'discussion' }
+      });
+      
       if (!language) {
         return res.status(404).send({ message: "Language not found" });
       }
