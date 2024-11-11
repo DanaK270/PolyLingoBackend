@@ -27,39 +27,37 @@ const languageController = {
       const lessonIds = [];
   
       for (const lesson of fields) {
-        // Array to store multiple video URLs for each lesson
         const videoUrls = [];
-  
-        // Check if `lesson.video` is an array of video paths
+
         if (Array.isArray(lesson.video)) {
-          // Upload each video in the array
           for (const videoPath of lesson.video) {
-            // Ensure the video path is a string, and upload to Cloudinary
-            if (typeof videoPath === 'string') {
-              const videoUploadResult = await cloudinary.uploader.upload(videoPath, {
-                resource_type: "video",
-              });
-  
-              // Push each uploaded video's data to the array
-              videoUrls.push({
-                url: videoUploadResult.secure_url,
-                public_id: videoUploadResult.public_id,
-              });
-            } else {
-              throw new Error(`Invalid video path: ${videoPath}`);
-            }
+            const videoUploadResult = await cloudinary.uploader.upload(videoPath, {
+              resource_type: "video",
+            });
+            videoUrls.push({
+              url: videoUploadResult.secure_url,
+              public_id: videoUploadResult.public_id,
+            });
           }
         }
-  
+
         // Create a new lesson document with multiple videos
         const newLesson = new Lesson({
           name: lesson.name,
           description: lesson.description,
           video: videoUrls, // Store array of uploaded video URLs
         });
-  
+
         const savedLesson = await newLesson.save();
         lessonIds.push(savedLesson._id);
+
+        // Create a new discussion for each lesson
+        const newDiscussion = new Discussion({
+          lessonId: savedLesson._id,
+          issues: [] // Initially empty; can be populated with issues later
+        });
+        
+        await newDiscussion.save();
       }
   
       const language = new Language({
@@ -75,6 +73,8 @@ const languageController = {
       res.status(400).send({ message: "Error creating language", error: err.message });
     }
   },
+  
+  
 
   
   getlanguage: async (req, res) => {
