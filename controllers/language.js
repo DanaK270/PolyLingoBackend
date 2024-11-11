@@ -1,5 +1,7 @@
 const Language = require("../models/Language");
-const Lesson = require("../models/Lesson"); // Import Lesson model
+const Lesson = require("../models/Lesson");
+const Discussion = require("../models/Discussion");
+
 const cloudinary = require("cloudinary").v2;
 const mongoose = require('mongoose');
 
@@ -23,33 +25,37 @@ const languageController = {
       const lessonIds = [];
   
       for (const lesson of fields) {
-        // Array to store multiple video URLs for each lesson
         const videoUrls = [];
-  
-        // Check if `lesson.video` is an array of video paths
+
         if (Array.isArray(lesson.video)) {
           for (const videoPath of lesson.video) {
             const videoUploadResult = await cloudinary.uploader.upload(videoPath, {
               resource_type: "video",
             });
-  
-            // Push each uploaded video's data to the array
             videoUrls.push({
               url: videoUploadResult.secure_url,
               public_id: videoUploadResult.public_id,
             });
           }
         }
-  
+
         // Create a new lesson document with multiple videos
         const newLesson = new Lesson({
           name: lesson.name,
           description: lesson.description,
           video: videoUrls, // Store array of uploaded video URLs
         });
-  
+
         const savedLesson = await newLesson.save();
         lessonIds.push(savedLesson._id);
+
+        // Create a new discussion for each lesson
+        const newDiscussion = new Discussion({
+          lessonId: savedLesson._id,
+          issues: [] // Initially empty; can be populated with issues later
+        });
+        
+        await newDiscussion.save();
       }
   
       const language = new Language({
@@ -66,6 +72,9 @@ const languageController = {
     }
   },
 
+
+
+  
   getlanguage: async (req, res) => {
     try {
       const languages = await Language.find().populate('fields'); // Populate fields with lesson data
