@@ -2,10 +2,10 @@ const express = require('express')
 const router = express.Router()
 const controller = require('../controllers/userNote')
 
-router.post('/notes', noteController.createUserNote)
-router.get('/notes/user/:userId', noteController.getUserNotesByUserId)
-router.get('/notes/:id', noteController.getUserNoteById)
-router.put('/notes/:id', noteController.updateUserNote)
-router.delete('/notes/:id', noteController.deleteUserNote)
+router.post('/notes', userNote.createUserNote)
+router.get('/notes/user/:userId', userNote.getUserNotesByUserId)
+router.get('/notes/:id', userNote.getUserNoteById)
+router.put('/notes/:id', userNote.updateUserNote)
+router.delete('/notes/:id', userNote.deleteUserNote)
 
 module.exports = router
