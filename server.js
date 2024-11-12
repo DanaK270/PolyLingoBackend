@@ -1,6 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const Discussion = require('./models/Discussion')
+const User = require('./models/User')
 
 const logger = require('morgan')
 
@@ -8,7 +9,7 @@ const cors = require('cors')
 
 const expressLayouts = require('express-ejs-layouts')
 
-
+// const UserNotes = require('./models/UserNote')
 
 const translation = require('./routes/translation');
 
@@ -85,6 +86,27 @@ app.use('/language', languageRouter)
 app.use('/auth', AuthRouter)
 app.use('/exercise', exerciseRoutes)
 app.use('/issues', issueRouter)
+
+app.get('/users/:userId', async (req, res) => {
+  try {
+    // Extract userId from request parameters
+    const { userId } = req.params;
+
+    // Fetch user from database by userId
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Respond with user's name
+    res.status(200).json({ name: user.name });
+
+  } catch (error) {
+    console.error('Error fetching user name:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 
 app.listen(PORT, () => {

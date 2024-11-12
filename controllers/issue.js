@@ -42,20 +42,21 @@ const GetIssues = async (req, res) => {
 
 const CreateIssue = async (req, res) => {
   try {
-    const { comment, discussionId } = req.body;
+    const { comment, discussionId, userId } = req.body; // Added userId to request body
 
-    if (!comment || !discussionId) {
-      return res.status(400).json({ error: "Comment and Discussion ID are required" });
+    if (!comment || !discussionId || !userId) {
+      return res.status(400).json({ error: "Comment, Discussion ID, and User ID are required" });
     }
 
     const newIssue = new Issue({
       comment,
-      discussionId
+      discussionId,
+      user: userId, // Associate the issue with a specific user
     });
 
     await newIssue.save();
 
-    // Assuming you're also updating the discussion with the new issue
+    // Update the discussion with the new issue
     const discussion = await Discussion.findById(discussionId);
     discussion.issues.push(newIssue._id);
     await discussion.save();
@@ -67,16 +68,18 @@ const CreateIssue = async (req, res) => {
   }
 };
 
+
 const ReplyToIssue = async (req, res) => {
   try {
     const { issueId } = req.params;
-    const { comment, parentReplyId } = req.body;
+    const { comment, parentReplyId, userId } = req.body;  // Added userId to request body
 
     // Create a new reply document
     const newReply = new Reply({
       comment,
       issue: issueId,
       parentReply: parentReplyId || null, // If it's a nested reply, set the parentReplyId
+      user: userId, // Associate the reply with a specific user
     });
 
     // Save the new reply
@@ -98,6 +101,7 @@ const ReplyToIssue = async (req, res) => {
     res.status(500).json({ error: 'Failed to add reply' });
   }
 };
+
 
 // const GetDiscussionIssues = async (req, res) => {
 //   const { discussionId } = req.params;  // Get discussionId from URL params
