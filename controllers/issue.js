@@ -3,23 +3,25 @@ const Discussion = require('../models/Discussion')
 
 // Helper function to dynamically populate nested replies
 const GetIssues = async (req, res) => {
-  const depth = parseInt(req.query.depth) || 10;  // Allow dynamic depth via query params (default to 10)
+  const depth = parseInt(req.query.depth) || 10; 
 
   const populateReplies = (depth = 10) => {
     let populateQuery = { path: 'replies' };
     let current = populateQuery;
-
+  
+    // Dynamically populate the replies based on the depth parameter
     for (let i = 0; i < depth; i++) {
-      current.populate = { path: 'replies' };
+      current.populate = { path: 'replies' };  // Add next level of replies
       current = current.populate;
     }
-
+  
     return populateQuery;
   };
+  
 
   try {
     const issues = await Issue.find()
-      .populate(populateReplies(depth))  // Use dynamic depth based on query params
+      .populate(populateReplies(depth))  // Use dynamic depth
       .exec();
     res.json(issues);
   } catch (err) {
@@ -97,32 +99,75 @@ const ReplyToIssue = async (req, res) => {
   }
 };
 
+// const GetDiscussionIssues = async (req, res) => {
+//   const { discussionId } = req.params;  // Get discussionId from URL params
+
+//   try {
+//     // Fetch the discussion based on the discussionId
+//     const discussion = await Discussion.findById(discussionId);
+//     console.log('Fetched discussion:', discussion);
+
+//     if (!discussion) {
+//       return res.status(404).json({ message: 'Discussion not found' });
+//     }
+
+//     // Fetch issues related to the discussionId
+//     const issues = await Issue.find({ discussionId })
+//       .populate({
+//         path: 'replies',
+//         populate: {
+//           path: 'replies',
+//           populate: {
+//             path: 'replies',  // Further nesting if needed
+//           },
+//         },
+//       })
+//       .exec();
+
+//     console.log('Fetched issues:', issues);
+
+//     if (!issues || issues.length === 0) {
+//       return res.status(404).json({ message: 'No issues found for this discussion' });
+//     }
+
+//     // Send the populated issues as response
+//     res.json(issues);
+//   } catch (err) {
+//     console.error('Error fetching issues for discussion:', err);
+//     res.status(500).json({ error: 'Failed to fetch issues and replies' });
+//   }
+// };
+
+
+const populateReplies = (depth = 10) => {
+  let populateQuery = { path: 'replies' };
+  let current = populateQuery;
+
+  // Dynamically populate the replies based on the depth parameter
+  for (let i = 0; i < depth; i++) {
+    current.populate = { path: 'replies' };  // Add next level of replies
+    current = current.populate;
+  }
+
+  return populateQuery;
+};
+
+// Get issues with nested replies for a given discussion
 const GetDiscussionIssues = async (req, res) => {
   const { discussionId } = req.params;  // Get discussionId from URL params
+  const depth = parseInt(req.query.depth) || 10;  // Get depth from query parameters (default to 10)
 
   try {
     // Fetch the discussion based on the discussionId
     const discussion = await Discussion.findById(discussionId);
-    console.log('Fetched discussion:', discussion);
-
     if (!discussion) {
       return res.status(404).json({ message: 'Discussion not found' });
     }
 
-    // Fetch issues related to the discussionId
+    // Fetch issues related to the discussionId and populate replies up to the specified depth
     const issues = await Issue.find({ discussionId })
-      .populate({
-        path: 'replies',
-        populate: {
-          path: 'replies',
-          populate: {
-            path: 'replies',  // Further nesting if needed
-          },
-        },
-      })
+      .populate(populateReplies(depth))  // Use dynamic depth to populate replies
       .exec();
-
-    console.log('Fetched issues:', issues);
 
     if (!issues || issues.length === 0) {
       return res.status(404).json({ message: 'No issues found for this discussion' });
