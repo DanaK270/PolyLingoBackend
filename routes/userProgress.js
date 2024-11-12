@@ -9,6 +9,14 @@ router.get(
   middleware.verifyToken,
   userProgressController.GetUserProgress
 )
+
+router.get(
+  '/:language_id',
+  middleware.stripToken,
+  middleware.verifyToken,
+  userProgressController.GetUserProgressById
+)
+
 router.post(
   '/',
   middleware.stripToken,
@@ -17,6 +25,6 @@ router.post(
 )
 router.delete('/:id', userProgressController.deleteUserProgress)
 router.put('/:id', userProgressController.updateUserProgress)
-router.patch('/stats/:id/', userProgressController.updateUserProgressStats)
+router.put('/stats/:id/', userProgressController.updateUserProgressStats)
 
 module.exports = router
