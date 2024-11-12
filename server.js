@@ -8,7 +8,13 @@ const cors = require('cors')
 
 const expressLayouts = require('express-ejs-layouts')
 
-const translation = require('./routes/translation')
+
+const userNoteRoutes = require('./routes/userNote');
+
+
+const translation = require('./routes/translation');
+
+
 
 require('dotenv').config()
 
@@ -41,6 +47,14 @@ const { Issue } = require('./models/Issue')
 
 app.use(cors())
 app.use(express.json())
+
+
+
+app.use('/userNote', userNoteRoutes);
+
+
+
+
 
 app.use(express.urlencoded({ extended: false }))
 app.use(logger('dev'))
