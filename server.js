@@ -8,6 +8,7 @@ const cors = require('cors')
 
 const expressLayouts = require('express-ejs-layouts')
 
+const userNoteRoutes = require('./routes/userNote');
 
 
 const translation = require('./routes/translation');
@@ -51,11 +52,11 @@ const { Issue } = require('./models/Issue')
 app.use(cors())
 app.use(express.json())
 
-const issueRouter = require('./routes/issue')
+
+app.use('/userNote', userNoteRoutes);
 
 
 
-const languageRouter=require("./routes/language")
 
 app.use(express.urlencoded({ extended: false }))
 app.use(logger('dev'))

@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const controller = require('../controllers/userNote')
+const noteController = require('../controllers/userNote')
 
 router.post('/notes', noteController.createUserNote)
 router.get('/notes/user/:userId', noteController.getUserNotesByUserId)
