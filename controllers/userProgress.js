@@ -35,6 +35,39 @@ const GetUserProgress = async (req, res) => {
   }
 }
 
+// get a specific user progress
+const GetUserProgressById = async (req, res) => {
+  try {
+    const { language_id } = req.params // Get language_id from query parameters
+    const user_id = res.locals.payload.id // Assume `req.user.id` is set for the logged-in user
+
+    if (!language_id) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Language ID is required' })
+    }
+
+    const userProg = await UserProgress.findOne({
+      user_id,
+      language_id: language_id
+    })
+      .populate('user_id')
+      .populate('language_id')
+      .populate('completedLessons')
+
+    if (!userProg) {
+      return res.status(404).json({
+        success: false,
+        message: 'User progress not found for this language'
+      })
+    }
+
+    res.status(200).json({ success: true, data: userProg })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+}
+
 // update a UserProgress by ID
 const updateUserProgress = async (req, res) => {
   try {
@@ -107,6 +140,7 @@ const updateUserProgressStats = async (req, res) => {
 module.exports = {
   createUserProgress,
   GetUserProgress,
+  GetUserProgressById,
   updateUserProgress,
   deleteUserProgress,
   updateUserProgressStats

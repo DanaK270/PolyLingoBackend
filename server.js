@@ -1,6 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const Discussion = require('./models/Discussion')
+const User = require('./models/User')
 
 const logger = require('morgan')
 
@@ -9,8 +10,12 @@ const cors = require('cors')
 const expressLayouts = require('express-ejs-layouts')
 
 
-const userNoteRoutes = require('./routes/userNote');
+// const UserNotes = require('./models/UserNote')
 
+// const translation = require('./routes/translation');
+
+
+const userNoteRoutes = require('./routes/userNote')
 
 const translation = require('./routes/translation');
 
@@ -50,13 +55,7 @@ const { Issue } = require('./models/Issue')
 app.use(cors())
 app.use(express.json())
 
-
-
-app.use('/userNote', userNoteRoutes);
-
-
-
-
+app.use('/userNote', userNoteRoutes)
 
 app.use(express.urlencoded({ extended: false }))
 app.use(logger('dev'))
@@ -65,8 +64,8 @@ const AuthRouter = require('./routes/AuthRouter')
 
 app.use('/translate', translation)
 
-// const languageRouter = require('./routes/language')
-// const issueRouter = require('./routes/issue')
+const languageRouter = require('./routes/language')
+const issueRouter = require('./routes/issue')
 const exerciseRoutes = require('./routes/exercise')
 const userProgressRouter = require('./routes/userProgress')
 
@@ -83,8 +82,34 @@ app.use('/language', languageRouter)
 app.use('/auth', AuthRouter)
 app.use('/exercise', exerciseRoutes)
 app.use('/issues', issueRouter)
+
+
+app.get('/users/:userId', async (req, res) => {
+  try {
+    // Extract userId from request parameters
+    const { userId } = req.params;
+
+    // Fetch user from database by userId
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Respond with user's name
+    res.status(200).json({ name: user.name });
+
+  } catch (error) {
+    console.error('Error fetching user name:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
 app.use('/userProgress', userProgressRouter)
-git p
+
+
+
 app.listen(PORT, () => {
   console.log(`App is running on PORT ${PORT}`)
 })
