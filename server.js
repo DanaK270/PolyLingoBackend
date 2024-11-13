@@ -19,7 +19,7 @@ const userNoteRoutes = require('./routes/userNote')
 
 const translation = require('./routes/translation');
 
-const languageRouter = require('./routes/language')
+
 
 const issueRouter = require('./routes/issue')
 
@@ -65,7 +65,7 @@ const AuthRouter = require('./routes/AuthRouter')
 app.use('/translate', translation)
 
 const languageRouter = require('./routes/language')
-const issueRouter = require('./routes/issue')
+
 const exerciseRoutes = require('./routes/exercise')
 const userProgressRouter = require('./routes/userProgress')
 
