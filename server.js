@@ -9,15 +9,13 @@ const cors = require('cors')
 
 const expressLayouts = require('express-ejs-layouts')
 
-
 // const UserNotes = require('./models/UserNote')
 
 // const translation = require('./routes/translation');
 
-
 const userNoteRoutes = require('./routes/userNote')
 
-const translation = require('./routes/translation');
+const translation = require('./routes/translation')
 
 // const languageRouter = require('./routes/language')
 
@@ -83,32 +81,27 @@ app.use('/auth', AuthRouter)
 app.use('/exercise', exerciseRoutes)
 app.use('/issues', issueRouter)
 
-
 app.get('/users/:userId', async (req, res) => {
   try {
     // Extract userId from request parameters
-    const { userId } = req.params;
+    const { userId } = req.params
 
     // Fetch user from database by userId
-    const user = await User.findById(userId);
+    const user = await User.findById(userId)
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'User not found' })
     }
 
     // Respond with user's name
-    res.status(200).json({ name: user.name });
-
+    res.status(200).json({ name: user.name })
   } catch (error) {
-    console.error('Error fetching user name:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('Error fetching user name:', error)
+    res.status(500).json({ message: 'Internal server error' })
   }
-});
-
+})
 
 app.use('/userProgress', userProgressRouter)
-
-
 
 app.listen(PORT, () => {
   console.log(`App is running on PORT ${PORT}`)

@@ -7,14 +7,21 @@ router.get(
   '/',
   middleware.stripToken,
   middleware.verifyToken,
-  userProgressController.GetUserProgress
+  userProgressController.getUserProgress
 )
 
 router.get(
   '/:language_id',
   middleware.stripToken,
   middleware.verifyToken,
-  userProgressController.GetUserProgressById
+  userProgressController.getUserProgressByLanguage
+)
+
+router.get(
+  '/id/:progressId',
+  middleware.stripToken,
+  middleware.verifyToken,
+  userProgressController.getUserProgressById
 )
 
 router.post(
