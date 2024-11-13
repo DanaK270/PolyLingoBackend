@@ -84,7 +84,7 @@ app.use('/auth', AuthRouter)
 app.use('/exercise', exerciseRoutes)
 app.use('/issues', issueRouter)
 app.use('/userProgress', userProgressRouter)
-
+git p
 app.listen(PORT, () => {
   console.log(`App is running on PORT ${PORT}`)
 })
