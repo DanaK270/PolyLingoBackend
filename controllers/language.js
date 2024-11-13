@@ -49,8 +49,10 @@ const languageController = {
           video: videoUrls // Store array of uploaded video URLs
         })
 
+
         const savedLesson = await newLesson.save()
         lessonIds.push(savedLesson._id)
+
 
         // Create a new discussion for each lesson
         const newDiscussion = new Discussion({
@@ -284,4 +286,6 @@ const languageController = {
   }
 }
 
+
 module.exports = languageController
+
