@@ -8,7 +8,8 @@ const { Schema } = mongoose;
 const issueSchema = new Schema(
   {
     comment: { type: String, required: true },
-    replies: [{ type: Schema.Types.ObjectId, ref: 'Reply' }], // Array of ObjectId references to Reply
+    replies: [{ type: Schema.Types.ObjectId, ref: 'Reply' }], 
+    discussionId: { type: Schema.Types.ObjectId, ref: 'Discussion', required: true }
   },
   { timestamps: true }
 );

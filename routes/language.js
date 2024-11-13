@@ -10,6 +10,7 @@ const upload = multer({ dest: 'uploads/' }); // Temporary storage for uploaded f
 router.post("/languages", upload.array('videos'), languageController.createlanguage);
 router.get("/languages", languageController.getlanguage);
 router.get("/languages/:id", languageController.getlanguageById);
+router.get("/lesson/:lessonId", languageController.getLessonById);
 router.put("/languages/:id", languageController.updatelanguage);
 router.delete("/languages/:id", languageController.deletelanguage);
 router.delete("/lesson/:lessonId", languageController.deletelesson);
