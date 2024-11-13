@@ -30,6 +30,30 @@ const getUserNotesByUserId = async (req, res) => {
   }
 }
 
+
+const getNotesByUserAndLesson = async (req, res) => {
+  try {
+    const { userId, lessonId } = req.params;
+
+    if (!userId || !lessonId) {
+      return res.status(400).json({ message: 'User ID and Lesson ID are required' });
+    }
+
+    // Fetch notes for the specified user and lesson
+    const userNotes = await UserNotes.find({ userId, lessonId });
+
+    if (!userNotes.length) {
+      return res.status(404).json({ message: 'No notes found for this user and lesson' });
+    }
+
+    res.status(200).json(userNotes);
+  } catch (error) {
+    console.error('Error fetching notes:', error); // Log the full error
+    res.status(500).json({ message: 'Failed to fetch notes', error: error.message || error });
+  }
+};
+
+
 // getting user specified note
 const getUserNoteById = async (req, res) => {
   try {
@@ -92,5 +116,6 @@ module.exports = {
   getUserNotesByUserId,
   getUserNoteById,
   updateUserNote,
-  deleteUserNote
+  deleteUserNote,
+  getNotesByUserAndLesson
 }
