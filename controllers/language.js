@@ -49,10 +49,8 @@ const languageController = {
           video: videoUrls // Store array of uploaded video URLs
         })
 
-
         const savedLesson = await newLesson.save()
         lessonIds.push(savedLesson._id)
-
 
         // Create a new discussion for each lesson
         const newDiscussion = new Discussion({
@@ -162,14 +160,9 @@ const languageController = {
       const lessonIds = []
       // Upload each lesson video to Cloudinary and save lessons
       for (const lesson of fields) {
-
-       
-
-
         const newLesson = new Lesson({
           name: lesson.name,
-          description: lesson.description,
-
+          description: lesson.description
         })
 
         const savedLesson = await newLesson.save()
@@ -198,7 +191,6 @@ const languageController = {
     }
   },
 
-  
   deletelanguage: async (req, res) => {
     const id = req.params.id
     try {
@@ -283,9 +275,28 @@ const languageController = {
         .status(500)
         .send({ message: 'Error deleting lesson', error: err.message })
     }
+  },
+
+  getAllLessons: async (req, res) => {
+    try {
+      // Find all lessons and populate the 'discussion' field if needed
+      const lessons = await Lesson.find().populate('discussion')
+
+      // Check if any lessons were found
+      if (!lessons || lessons.length === 0) {
+        return res.status(404).send({ message: 'No lessons found' })
+      }
+
+      // Send all lessons in the response
+      res.json(lessons)
+    } catch (err) {
+      // Handle errors
+      console.error(err) // Log the error for debugging
+      res
+        .status(500)
+        .send({ message: 'Error retrieving lessons', error: err.message })
+    }
   }
 }
 
-
 module.exports = languageController
-
