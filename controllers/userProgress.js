@@ -17,7 +17,7 @@ const createUserProgress = async (req, res) => {
 }
 
 // get all the progresses of the logged in user
-const GetUserProgress = async (req, res) => {
+const getUserProgress = async (req, res) => {
   try {
     // const lessons = await Lesson.find({
     //   _id: { $in: ['6731cd00682c379f21e64e62'] }
@@ -36,7 +36,7 @@ const GetUserProgress = async (req, res) => {
 }
 
 // get a specific user progress
-const GetUserProgressById = async (req, res) => {
+const getUserProgressByLanguage = async (req, res) => {
   try {
     const { language_id } = req.params // Get language_id from query parameters
     const user_id = res.locals.payload.id // Assume `req.user.id` is set for the logged-in user
@@ -63,6 +63,28 @@ const GetUserProgressById = async (req, res) => {
     }
 
     res.status(200).json({ success: true, data: userProg })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+}
+
+// Controller to get a specific userProgress by progressId
+const getUserProgressById = async (req, res) => {
+  try {
+    const { progressId } = req.params
+
+    const userProgress = await UserProgress.findById(progressId)
+      .populate('user_id')
+      .populate('language_id')
+      .populate('completedLessons')
+
+    if (!userProgress) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'UserProgress not found' })
+    }
+
+    res.status(200).json({ success: true, data: userProgress })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })
   }
@@ -139,8 +161,9 @@ const updateUserProgressStats = async (req, res) => {
 
 module.exports = {
   createUserProgress,
-  GetUserProgress,
-  GetUserProgressById,
+  getUserProgress,
+  getUserProgressByLanguage,
+  getUserProgressById,
   updateUserProgress,
   deleteUserProgress,
   updateUserProgressStats
