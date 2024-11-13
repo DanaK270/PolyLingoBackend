@@ -160,22 +160,14 @@ const languageController = {
       const lessonIds = []
       // Upload each lesson video to Cloudinary and save lessons
       for (const lesson of fields) {
-        const videoUploadResult = await cloudinary.uploader.upload(
-          lesson.video,
-          {
-            resource_type: 'video'
-          }
-        )
+
+       
+
 
         const newLesson = new Lesson({
           name: lesson.name,
           description: lesson.description,
-          video: [
-            {
-              url: videoUploadResult.secure_url,
-              public_id: videoUploadResult.public_id // Store additional metadata if needed
-            }
-          ]
+
         })
 
         const savedLesson = await newLesson.save()
@@ -204,6 +196,7 @@ const languageController = {
     }
   },
 
+  
   deletelanguage: async (req, res) => {
     const id = req.params.id
     try {
