@@ -19,9 +19,9 @@ const userNoteRoutes = require('./routes/userNote')
 
 const translation = require('./routes/translation');
 
-const languageRouter = require('./routes/language')
+// const languageRouter = require('./routes/language')
 
-const issueRouter = require('./routes/issue')
+// const issueRouter = require('./routes/issue')
 
 require('dotenv').config()
 
